@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF to Image Converter 🚀</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6, #14b8a6);
+            --card-bg: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --highlight: #3b82f6;
+            --button-gradient: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark {
+            --card-bg: #2d3748;
+            --text-color: #f7fafc;
+            --text-light: #cbd5e0;
+        }
+
+        body {
+            background: var(--primary-gradient);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            padding-bottom: 100px;
+            transition: all 0.3s ease;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: var(--shadow);
+        }
+
+        .dark .header {
+            background-color: rgba(26, 32, 44, 0.95);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            background: var(--button-gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-right: 10px;
+        }
+
+        .nav-link {
+            position: relative;
+            color: var(--text-color);
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--highlight);
+        }
+
+        .nav-link.active {
+            color: var(--highlight);
+            font-weight: bold;
+        }
+
+        .nav-link.active::after {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--button-gradient);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 1rem;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+            font-size: 1.25rem;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: bold;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background: var(--button-gradient);
+            color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #64748b;
+            color: white;
+            box-shadow: 0 4px 6px rgba(100, 116, 139, 0.3);
+        }
+
+        .btn-secondary:hover {
+            box-shadow: 0 6px 8px rgba(100, 116, 139, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .upload-zone {
+            border: 2px dashed #8b5cf6;
+            border-radius: 1rem;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .upload-zone:hover {
+            border-color: #3b82f6;
+            background-color: rgba(139, 92, 246, 0.05);
+        }
+
+        .format-option {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-right: 0.5rem;
+            transition: all 0.3s ease;
+            background-color: #f3f4f6;
+            color: var(--text-color);
+        }
+
+        .dark .format-option {
+            background-color: #4a5568;
+        }
+
+        .format-option.selected {
+            background-color: #3b82f6;
+            color: white;
+        }
+
+        .ad-container {
+            background-color: #f3f4f6;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 2rem 0;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100px;
+        }
+
+        .dark .ad-container {
+            background-color: #4a5568;
+        }
+
+        .testimonial-card {
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+
+        .star-rating {
+            color: #eab308;
+            margin-bottom: 10px;
+        }
+
+        .faq-item {
+            margin-bottom: 1rem;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .faq-answer {
+            padding: 0 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item.open .faq-answer {
+            max-height: 300px;
+            padding: 1rem 1.5rem;
+        }
+
+        .faq-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .faq-item.open .faq-icon {
+            transform: rotate(45deg);
+        }
+
+        .footer {
+            background-color: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(5px);
+            padding: 1.5rem 0;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .dark .footer {
+            background-color: rgba(26, 32, 44, 0.95);
+        }
+
+        .footer-link {
+            color: var(--text-color);
+            text-decoration: none;
+            margin: 0 10px;
+            transition: color 0.3s ease;
+        }
+
+        .footer-link:hover {
+            color: var(--highlight);
+        }
+
+        .social-icon {
+            color: var(--text-color);
+            margin: 0 10px;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            color: var(--highlight);
+            transform: scale(1.2);
+        }
+
+        .theme-toggle {
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            background-color: #f3f4f6;
+        }
+
+        .dark .theme-toggle {
+            background-color: #4a5568;
+        }
+
+        .theme-toggle:hover {
+            background-color: rgba(59, 130, 246, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 15px;
+            }
+            
+            .nav-menu {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .format-options {
+                flex-wrap: wrap;
+            }
+            
+            .format-option {
+                margin-bottom: 0.5rem;
+            }
+
+            .testimonial-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .main-content {
+            padding-bottom: 2rem;
+        }
+
+        /* Optimizations for PDF export */
+        @media print {
+            html, body {
+                height: auto;
+            }
+
+            .header, .footer {
+                position: relative;
+            }
+
+            body {
+                padding-bottom: 0;
+            }
+
+            .ad-container {
+                page-break-inside: avoid;
+            }
+
+            .card {
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="header py-4">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div class="logo-container mb-4 md:mb-0">
+                <div class="logo">PDF2IMG</div>
+                <h1 class="text-2xl font-bold">PDF to Image Converter 🚀</h1>
+            </div>
+            <div class="flex items-center">
+                <nav class="nav-menu flex">
+                    <a href="#" class="nav-link active">🏠 Home</a>
+                    <a href="#" class="nav-link">📄 PDF to Image</a>
+                    <a href="#" class="nav-link">🔒 Privacy Policy</a>
+                </nav>
+                <div class="theme-toggle ml-4" id="themeToggle">
+                    <i class="fas fa-sun"></i>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content">
+        <div class="container mx-auto py-6">
+            <!-- Ad Space 1 - Top Banner -->
+            <div class="ad-container">
+                <div class="text-center">
+                    <span class="text-sm text-gray-500">Advertisement</span>
+                    <div class="h-16 flex items-center justify-center">
+                        <p>Google Ad - Top Banner</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Converter Section -->
+            <div class="card my-8">
+                <div class="card-header">
+                    Convert PDF to Image 🖼️
+                </div>
+                <div class="card-body">
+                    <div class="upload-zone mb-6">
+                        <div class="text-6xl mb-4">📤</div>
+                        <h3 class="text-xl font-bold mb-2">Drag & Drop your PDF file here</h3>
+                        <p class="text-sm text-gray-500 mb-4">or click to browse your files</p>
+                        <button class="btn btn-secondary">Select File</button>
+                    </div>
+
+                    <div class="my-6">
+                        <h3 class="text-lg font-bold mb-3">Select Output Format:</h3>
+                        <div class="format-options flex">
+                            <div class="format-option selected">JPG</div>
+                            <div class="format-option">PNG</div>
+                            <div class="format-option">WEBP</div>
+                        </div>
+                    </div>
+
+                    <div class="my-6">
+                        <h3 class="text-lg font-bold mb-3">Image Quality:</h3>
+                        <input type="range" min="1" max="100" value="80" class="w-full" id="qualitySlider">
+                        <div class="flex justify-between text-sm">
+                            <span>Lower Size</span>
+                            <span id="qualityValue">80%</span>
+                            <span>Higher Quality</span>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4 mt-6">
+                        <button class="btn btn-primary flex-grow flex items-center justify-center">
+                            <i class="fas fa-bolt mr-2"></i> Convert Now
+                        </button>
+                        <button class="btn btn-secondary flex-grow flex items-center justify-center" disabled>
+                            <i class="fas fa-download mr-2"></i> Download All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Space 2 - Middle Banner -->
+            <div class="ad-container">
+                <div class="text-center">
+                    <span class="text-sm text-gray-500">Advertisement</span>
+                    <div class="h-16 flex items-center justify-center">
+                        <p>Google Ad - Middle Banner</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div class="my-12">
+                <h2 class="text-3xl font-bold text-center mb-8">Why Choose Our Tool? ⚡</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="card">
+                        <div class="p-6 text-center">
+                            <div class="text-4xl mb-4">🚀</div>
+                            <h3 class="text-xl font-bold mb-2">Lightning Fast</h3>
+                            <p>Convert multi-page PDFs to images in seconds with our optimized engine.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="p-6 text-center">
+                            <div class="text-4xl mb-4">🔒</div>
+                            <h3 class="text-xl font-bold mb-2">100% Secure</h3>
+                            <p>Your files are processed in your browser and never uploaded to any server.</p>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="p-6 text-center">
+                            <div class="text-4xl mb-4">💯</div>
+                            <h3 class="text-xl font-bold mb-2">High Quality</h3>
+                            <p>Maintain crisp text and sharp images with our advanced conversion algorithm.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Testimonials Section -->
+            <div class="my-12">
+                <h2 class="text-3xl font-bold text-center mb-8">What Our Users Say 💬</h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 testimonial-grid">
+                    <div class="card testimonial-card">
+                        <div class="star-rating">★★★★★</div>
+                        <p class="mb-4">"This tool saved me hours of work! Super fast and easy to use. The quality of the images is excellent."</p>
+                        <div class="font-bold">- Alex P., Designer</div>
+                    </div>
+                    <div class="card testimonial-card">
+                        <div class="star-rating">★★★★★</div>
+                        <p class="mb-4">"I needed to convert a 50-page PDF for my presentation and this converter handled it perfectly. Highly recommended!"</p>
+                        <div class="font-bold">- Sarah M., Teacher</div>
+                    </div>
+                    <div class="card testimonial-card">
+                        <div class="star-rating">★★★★☆</div>
+                        <p class="mb-4">"Great tool for quick conversions. The multiple format options are super helpful for my work in digital marketing."</p>
+                        <div class="font-bold">- Michael K., Marketer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Space 3 - Sidebar (shown as full width on mobile) -->
+            <div class="ad-container">
+                <div class="text-center">
+                    <span class="text-sm text-gray-500">Advertisement</span>
+                    <div class="h-16 flex items-center justify-center">
+                        <p>Google Ad - Sidebar/Mobile Banner</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ Section -->
+            <div class="my-12">
+                <h2 class="text-3xl font-bold text-center mb-8">Frequently Asked Questions ❓</h2>
+                <div class="space-y-4">
+                    <div class="card faq-item">
+                        <div class="faq-question">
+                            <div>Is my data secure when using this tool?</div>
+                            <div class="faq-icon">+</div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes, absolutely! All processing happens directly in your browser. Your PDF files are never uploaded to our server, ensuring complete privacy and security of your data.</p>
+                        </div>
+                    </div>
+                    <div class="card faq-item">
+                        <div class="faq-question">
+                            <div>What image formats are supported?</div>
+                            <div class="faq-icon">+</div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Our tool currently supports conversion to JPG, PNG, and WEBP formats. Each format has its benefits: JPG for smaller file sizes, PNG for better quality with transparency, and WEBP for modern web optimization.</p>
+                        </div>
+                    </div>
+                    <div class="card faq-item">
+                        <div class="faq-question">
+                            <div>Is there a file size limit?</div>
+                            <div class="faq-icon">+</div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Since all processing happens in your browser, the limit depends on your device's capabilities. Generally, files up to 100MB should process without issues on most modern devices.</p>
+                        </div>
+                    </div>
+                    <div class="card faq-item">
+                        <div class="faq-question">
+                            <div>How good is the image quality?</div>
+                            <div class="faq-icon">+</div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Our conversion algorithm maintains high fidelity to the original PDF. You can adjust the quality slider to balance between file size and image quality according to your needs.</p>
+                        </div>
+                    </div>
+                    <div class="card faq-item">
+                        <div class="faq-question">
+                            <div>Can I convert multiple PDFs at once?</div>
+                            <div class="faq-icon">+</div>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Currently, our tool processes one PDF file at a time. However, you can convert multi-page PDFs and download all resulting images as a batch.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Ad Space 4 - Bottom Banner -->
+            <div class="ad-container">
+                <div class="text-center">
+                    <span class="text-sm text-gray-500">Advertisement</span>
+                    <div class="h-16 flex items-center justify-center">
+                        <p>Google Ad - Bottom Banner</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How To Use Section -->
+            <div class="my-12">
+                <h2 class="text-3xl font-bold text-center mb-8">How To Use 📝</h2>
+                <div class="card">
+                    <div class="p-6">
+                        <ol class="space-y-4 list-decimal pl-5">
+                            <li class="pl-2">
+                                <span class="font-bold">Upload your PDF:</span> Drag and drop your PDF file onto the upload area or click to select a file from your device.
+                            </li>
+                            <li class="pl-2">
+                                <span class="font-bold">Select output format:</span> Choose between JPG, PNG, or WEBP depending on your needs.
+                            </li>
+                            <li class="pl-2">
+                                <span class="font-bold">Adjust quality:</span> Use the slider to set the quality level. Higher quality means larger file sizes.
+                            </li>
+                            <li class="pl-2">
+                                <span class="font-bold">Convert:</span> Click the "Convert Now" button and wait for the process to complete.
+                            </li>
+                            <li class="pl-2">
+                                <span class="font-bold">Download:</span> Download individual images or get all images at once as a ZIP file.
+                            </li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container mx-auto">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <p>© 2023 PDF to Image Converter. All rights reserved.</p>
+                </div>
+                <div class="flex mb-4 md:mb-0">
+                    <a href="#" class="footer-link">Home</a>
+                    <a href="#" class="footer-link">Privacy Policy</a>
+                    <a href="#" class="footer-link">Terms of Service</a>
+                    <a href="#" class="footer-link">Contact</a>
+                </div>
+                <div class="flex">
+                    <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-linkedin"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle Functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        const toggleIcon = themeToggle.querySelector('i');
+
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            
+            if (body.classList.contains('dark')) {
+                toggleIcon.classList.remove('fa-sun');
+                toggleIcon.classList.add('fa-moon');
+            } else {
+                toggleIcon.classList.remove('fa-moon');
+                toggleIcon.classList.add('fa-sun');
+            }
+        });
+
+        // FAQ Accordion Functionality
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            question.addEventListener('click', () => {
+                item.classList.toggle('open');
+            });
+        });
+
+        // Format Selection
+        const formatOptions = document.querySelectorAll('.format-option');
+        formatOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                formatOptions.forEach(opt => opt.classList.remove('selected'));
+                option.classList.add('selected');
+            });
+        });
+
+        // Quality Slider
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        
+        qualitySlider.addEventListener('input', () => {
+            qualityValue.textContent = qualitySlider.value + '%';
+        });
+
+        // Upload Zone Click Handler
+        const uploadZone = document.querySelector('.upload-zone');
+        uploadZone.addEventListener('click', () => {
+            // This would normally trigger file input, but we're not implementing actual functionality
+            alert('This is a UI mockup. File upload functionality is not implemented.');
+        });
+
+        // Convert Button Click Handler
+        const convertButton = document.querySelector('.btn-primary');
+        convertButton.addEventListener('click', () => {
+            alert('This is a UI mockup. Conversion functionality is not implemented.');
+        });
+    </script>
+</body>
+</html>
